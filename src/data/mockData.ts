@@ -109,7 +109,7 @@ export const Posts: IPost[] = [
   },
 ];
 
-export const Comment: IComment[] = [
+export const Comments: IComment[] = [
   {
     id: 1,
     authorId: 10,
