@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { Comments, Posts, Users } from "../../../data/mockData";
 import { Averia_Libre } from "next/font/google";
+import { start } from "repl";
 
 export async function GET(request: Request) {
   await new Promise((resolve) => setTimeout(() => resolve(null), 1000));
@@ -62,9 +63,35 @@ export async function GET(request: Request) {
     }
     if (order === "asc") {
       return aValue > bValue ? 1 : -1;
+    } else {
+      return bValue > aValue ? 1 : -1;
     }
   });
-  return NextResponse.json(postWithAuthors);
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const paginatedPost = sortedPost.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(sortedPost.length / limit);
+  const hasNextPage = page < totalPages;
+  const hasPrevPage = page > 1;
+
+  return NextResponse.json({
+    posts: paginatedPost,
+    pagination: {
+      currentPage: page,
+      totalPages,
+      totalPosts: sortedPost.length,
+      hasNextPage,
+      hasPrevPage,
+      limit,
+    },
+    filters: {
+      authorId,
+      search,
+      sortBy,
+      order,
+    },
+  });
 }
 
 export async function POST(request: Request) {
@@ -78,4 +105,37 @@ export async function POST(request: Request) {
   };
   Posts.push(newPost);
   return NextResponse.json(newPost, { status: 201 });
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+
+    if (!body.title || !body.content || !body.authorId) {
+      return NextResponse.json(
+        { error: "title, content, authorId are required " },
+        { status: 400 },
+      );
+    }
+    const author = Users.find((u) => u.id === body.authorId);
+    if (!author) {
+      return NextResponse.json({ error: "author not found" }, { status: 400 });
+    }
+    const newPost = {
+      id: Math.max(...Posts.map((p) => p.id)) + 1,
+      title: body.title,
+      content: body.content,
+      authorId: body.authorId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    Posts.push(newPost);
+    const postWithAuthor = {
+      ...newPost,
+      author: author,
+    };
+    return NextResponse.json(postWithAuthor, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ error: "json is not valid" }, { status: 404 });
+  }
 }

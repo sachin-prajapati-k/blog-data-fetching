@@ -3,7 +3,7 @@ export interface IPost {
   title: string;
   content: string;
   authorId: number;
-  author: string;
+  author?: string;
   createdAt: string;
   updatedAt: string;
 }
