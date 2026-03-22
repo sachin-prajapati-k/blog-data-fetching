@@ -90,5 +90,15 @@ export async function DELETE(
     return NextResponse.json({ error: "post is not found" }, { status: 400 });
   }
   const deletedPost = Posts.splice(postIndex, 1)[0];
-  const deletedComments=
+  const deletedComments = Comments.filter((c) => c.postId === postID);
+  for (let i = Comments.length - 1; i >= 0; i--) {
+    if (Comments[i].postId === postID) {
+      Comments.splice(i, 1);
+    }
+  }
+  return NextResponse.json({
+    message: "post and assiciated post are deleted successfully",
+    deletedPost: deletedPost,
+    deletedComments: deletedComments.length,
+  });
 }
