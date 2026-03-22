@@ -1,10 +1,9 @@
 import { Comments, Posts, Users } from "@/src/data/mockData";
-import { Postpone } from "next/dist/server/app-render/dynamic-rendering";
+import { IParams } from "@/src/types";
+
 import { NextResponse } from "next/server";
 
-interface IParams {
-  params: { id: string };
-}
+
 export async function GET(request: Request, { params }: IParams) {
   await new Promise((resolve) => setTimeout(resolve, 1000));
   const { id } = await params;

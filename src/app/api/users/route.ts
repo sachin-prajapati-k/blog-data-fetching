@@ -1,4 +1,4 @@
-import { resolve } from "path";
+
 import { Users, Posts } from "@/src/data/mockData";
 import { NextResponse } from "next/server";
 export async function GET() {

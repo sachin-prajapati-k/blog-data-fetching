@@ -24,3 +24,7 @@ export interface IComment {
   post?: IPost;
   createdAt: string;
 }
+
+export interface IParams {
+  params: { id: string };
+}
