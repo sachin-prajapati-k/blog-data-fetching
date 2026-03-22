@@ -1,4 +1,5 @@
 import { Comments, Posts, Users } from "@/src/data/mockData";
+import { NEXT_REWRITTEN_PATH_HEADER } from "next/dist/client/components/app-router-headers";
 import { NextResponse } from "next/server";
 
 interface IParam {
@@ -46,13 +47,48 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } },
 ) {
-try{
-  const {id}=await params;
-  const postId=parseInt(id);
-  if(isNaN(postId)){
-    return NextResponse.json({error:'postid is not valid'},{status:400})
+  try {
+    const { id } = await params;
+    const postId = parseInt(id);
+    if (isNaN(postId)) {
+      return NextResponse.json(
+        { error: "postid is not valid" },
+        { status: 400 },
+      );
+    }
+    const postIndex = Posts.findIndex((p) => p.id === postId);
+    if (postIndex === -1) {
+      return NextResponse.json({ error: "post not found" }, { status: 400 });
+    }
+    const body = await request.json();
+    const updatedPost = {
+      ...Posts[postIndex],
+      ...body,
+      id: postId,
+      updatedAt: new Date().toISOString(),
+    };
+    Posts[postIndex] = updatedPost;
+    const author = Users.find((u) => u.id === updatedPost.authorId);
+    return NextResponse.json({ ...updatedPost, author });
+  } catch (error) {
+    return NextResponse.json({ error: "invalid json data" }, { status: 409 });
   }
-  const postIndex=
 }
 
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
+  const { id } = await params;
+  const postID = parseInt(id);
+
+  if (isNaN(postID)) {
+    return NextResponse.json({ error: "post id is invalid" }, { status: 400 });
+  }
+  const postIndex = Posts.findIndex((p) => p.id === postID);
+  if (postIndex === -1) {
+    return NextResponse.json({ error: "post is not found" }, { status: 400 });
+  }
+  const deletedPost = Posts.splice(postIndex, 1)[0];
+  const deletedComments=
 }
