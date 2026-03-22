@@ -24,6 +24,15 @@ export const Posts: IPost[] = [
     updatedAt: "2025-01-01T10:00:00Z",
   },
   {
+    id: 1,
+    author: "Sachin",
+    authorId: 10, // Matches Sachin (ID 10)
+    title: "My another post",
+    content: "hello this is my another post to test the api.",
+    createdAt: "2025-01-01T10:00:00Z",
+    updatedAt: "2025-01-01T10:00:00Z",
+  },
+  {
     id: 2,
     author: "Anjali",
     authorId: 12, // Fixed: Matches Anjali (ID 12)

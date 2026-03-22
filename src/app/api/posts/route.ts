@@ -1,18 +1,17 @@
 import { NextResponse } from "next/server";
 
 import { Comments, Posts, Users } from "../../../data/mockData";
-import { Averia_Libre } from "next/font/google";
-import { start } from "repl";
 
 export async function GET(request: Request) {
   await new Promise((resolve) => setTimeout(() => resolve(null), 1000));
-  const { searcharams } = new URL(request.url);
-  const authorId = searcharams.get("authorId");
-  const search = searcharams.get("search");
-  const sortBy = searcharams.get("sortBy");
-  const order = searcharams.get("order");
-  const page = searcharams.get("page");
-  const limit = searcharams.get("limit");
+  const { searchParams } = new URL(request.url);
+  const authorId = searchParams.get("authorId");
+  const search = searchParams.get("search");
+  const sortBy = searchParams.get("sortBy");
+  const order = searchParams.get("order");
+  const page = Number(searchParams.get("page"));
+  const limit = Number(searchParams.get("limit"));
+
   let filteredPosts = Posts;
   if (authorId) {
     const parsedAuthorId = parseInt(authorId);
@@ -46,20 +45,20 @@ export async function GET(request: Request) {
     let aValue, bValue;
     switch (sortBy) {
       case "title":
-        aValue = a.title.toLowerCase();
-        bValue = b.title.toLowerCase();
+        aValue = a.title.toLowerCase() || "";
+        bValue = b.title.toLowerCase() || "";
         break;
       case "author":
-        aValue = a.author?.name.toLowerCase();
-        bValue = b.author?.name.toLowerCase();
+        aValue = a.author?.name.toLowerCase() || "unknown";
+        bValue = b.author?.name.toLowerCase() || "unknown";
         break;
       case "commentCount":
-        aValue = a.comment_count;
-        bValue = b.comment_count;
+        aValue = a.comment_count || 0;
+        bValue = b.comment_count || 0;
         break;
       default:
-        aValue = new Date(a.createdAt).getTime();
-        bValue = new Date(b.createdAt).getTime();
+        aValue = new Date(a.createdAt).getTime() || 0;
+        bValue = new Date(b.createdAt).getTime() || 0;
     }
     if (order === "asc") {
       return aValue > bValue ? 1 : -1;
@@ -92,19 +91,6 @@ export async function GET(request: Request) {
       order,
     },
   });
-}
-
-export async function POST(request: Request) {
-  const body = await request.json();
-
-  const newPost = {
-    id: Posts.length + 1,
-    ...body,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString,
-  };
-  Posts.push(newPost);
-  return NextResponse.json(newPost, { status: 201 });
 }
 
 export async function POST(request: Request) {
