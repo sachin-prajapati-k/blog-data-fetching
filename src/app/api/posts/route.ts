@@ -9,8 +9,8 @@ export async function GET(request: Request) {
   const search = searchParams.get("search");
   const sortBy = searchParams.get("sortBy");
   const order = searchParams.get("order");
-  const page = Number(searchParams.get("page"));
-  const limit = Number(searchParams.get("limit"));
+  const page = Number(searchParams.get("page")) || 1;
+  const limit = Number(searchParams.get("limit")) || 10;
 
   let filteredPosts = Posts;
   if (authorId) {
